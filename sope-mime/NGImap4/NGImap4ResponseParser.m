@@ -2406,8 +2406,12 @@ static NSDictionary *_parseBody(NGImap4ResponseParser *self, BOOL isBodyStructur
     NSLog(@"%s: got noparsed content %@", __PRETTY_FUNCTION__,
           str);
   }
-  else 
+  else {
     _consume(self, 1);
+    if (isBodyStructure) {
+      _consumeIfMatch(self, ' ');    
+    }
+  }
 
   return result;
 }
