@@ -2408,8 +2408,8 @@ static NSDictionary *_parseBody(NGImap4ResponseParser *self, BOOL isBodyStructur
   }
   else {
     _consume(self, 1);
-    if (isBodyStructure) {
-      _consumeIfMatch(self, ' ');    
+    if (isBodyStructure && _la(self, 0) == ' ' && _la(self, 1) == '(') {
+      _consume(self, 1);
     }
   }
 
