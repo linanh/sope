@@ -67,10 +67,8 @@ ifeq ($(GNUSTEP_HOST_OS),rhapsody5.5)
 #libNGExtensions_LIBRARIES_DEPEND_UPON += -lFoundationExt
 endif
 
-ifeq ($(GNUSTEP_TARGET_OS),freebsd)
 libNGExtensions_LIB_DIRS += -L/usr/local/lib
 libNGExtensions_LIBRARIES_DEPEND_UPON += -liconv
-endif
 
 # Foundation specific settings
 

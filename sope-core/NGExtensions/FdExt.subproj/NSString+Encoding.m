@@ -196,6 +196,9 @@ static char *iconv_wrapper(id self, char *_src, unsigned _srcLen,
   type       = iconv_open(toEncode, fromEncode);
   inbuf      = NULL;
   outbuf     = NULL;
+
+  int discard_ilseq = 1;
+  iconvctl(type, ICONV_SET_DISCARD_ILSEQ, &discard_ilseq);
   
   if (type == (iconv_t)-1) {
     [self logWithFormat:@"%s: Could not handle iconv encoding. FromEncoding:%@"
