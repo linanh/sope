@@ -115,6 +115,7 @@ static BOOL _parseBadUntaggedResponse(NGImap4ResponseParser *self,
 static BOOL _parseNoUntaggedResponse(NGImap4ResponseParser *self,
                                      NGMutableHashMap *result_);
 static NSNumber *_parseUnsigned(NGImap4ResponseParser *self);
+static NSNumber *_parseUnsignedLongLong(NGImap4ResponseParser *self);
 static NSString *_parseUntil(NGImap4ResponseParser *self, char _c);
 static NSString *_parseUntil2(NGImap4ResponseParser *self, char _c1, char _c2);
 
@@ -1194,7 +1195,7 @@ _purifyQuotedString(NSMutableString *quotedString) {
       if (!_matchesString(self, "MODSEQ "))
         return NO;
       _consume(self, 7);
-      [result_ addObject:_parseUnsigned(self) forKey:@"modseq"];
+      [result_ addObject:_parseUnsignedLongLong(self) forKey:@"modseq"];
       _consume(self, 1); /* final ')' */
     }
     else
@@ -1856,7 +1857,7 @@ _purifyQuotedString(NSMutableString *quotedString) {
     }
     else if ([key isEqualToString:@"modseq"]) {
       _consumeIfMatch(self, '(');
-      [fetch setObject:_parseUnsigned(self) forKey:key];
+      [fetch setObject:_parseUnsignedLongLong(self) forKey:key];
       _consumeIfMatch(self, ')');
     }
     else if ([key isEqualToString:@"rfc822.size"]) {
@@ -2637,6 +2638,27 @@ static NSNumber *_parseUnsigned(NGImap4ResponseParser *self) {
     return nil;
   
   return [NumClass numberWithUnsignedInt:n];
+}
+
+static NSNumber *_parseUnsignedLongLong(NGImap4ResponseParser *self) {
+  unsigned long long n;
+  unsigned char c;
+  BOOL     isNumber;
+
+  isNumber = NO;  
+  n        = 0;  
+  c        = _la(self, 0);
+  
+  while ((c >= '0') && (c <= '9')) {
+    _consume(self, 1);
+    isNumber = YES;
+    n        = 10 * n + (c - 48);
+    c        = _la(self, 0);
+  }
+  if (!isNumber)
+    return nil;
+  
+  return [NumClass numberWithUnsignedLongLong:n];
 }
 
 static NSString *_parseUntil(NGImap4ResponseParser *self, char _c) {
