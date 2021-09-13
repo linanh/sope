@@ -179,6 +179,9 @@ static char *iconv_wrapper(id self, char *_src, unsigned _srcLen,
 
   _fromEncode = [_fromEncode uppercaseString];
   _toEncode   = [_toEncode   uppercaseString];
+    
+  _fromEncode = [_fromEncode stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  _toEncode = [_toEncode stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
   if (0 && [_fromEncode isEqualToString:_toEncode]) {
     outlen = _srcLen;
