@@ -200,14 +200,15 @@ static char *iconv_wrapper(id self, char *_src, unsigned _srcLen,
   inbuf      = NULL;
   outbuf     = NULL;
 
-  int discard_ilseq = 1;
-  iconvctl(type, ICONV_SET_DISCARD_ILSEQ, &discard_ilseq);
-  
   if (type == (iconv_t)-1) {
     [self logWithFormat:@"%s: Could not handle iconv encoding. FromEncoding:%@"
           @" to encoding:%@", __PRETTY_FUNCTION__, _fromEncode, _toEncode];
     goto CLEAR_AND_RETURN;
   }
+  
+  int discard_ilseq = 1;
+  iconvctl(type, ICONV_SET_DISCARD_ILSEQ, &discard_ilseq);
+
   inbytesleft  = _srcLen;
   inbuf        = _src;
   outlen       = inbytesleft * 3;
