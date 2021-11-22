@@ -261,7 +261,7 @@ static void _initImap4SearchCategory(void) {
   insertNot:(BOOL)insertNot
 {
   NSEnumerator *enumerator = nil;
-  id       lvalue;
+  id       lvalue, uvalue;
   SEL      lselector;
   
   lvalue    = [self value];
@@ -283,16 +283,13 @@ static void _initImap4SearchCategory(void) {
   
   enumerator = [lvalue objectEnumerator];
   while ((lvalue = [enumerator nextObject]) != nil) {
-    lvalue = [lvalue uppercaseString];
+    uvalue = [lvalue uppercaseString];
         
-    if ([FlagKeyWords containsObject:lvalue]) {
-      if (insertNot) [search appendString:@"NOT "];
-      [search appendString:lvalue];
-    }
-    else {
-      return [self invalidImap4SearchQualifier:
-		     @"unexpected keyword for EOKeyValueQualifier"];
-    }
+    if (insertNot) [search appendString:@"NOT "];
+    if ([FlagKeyWords containsObject:uvalue])
+      [search appendString:uvalue];
+    else
+      [search appendFormat: @"KEYWORD %@", lvalue];
   }
   return nil;
 }
@@ -313,10 +310,10 @@ andComparisonSelector:(SEL)lselector {
     dateOperator = nil;
  
   if (dateOperator) {
-    //if ([dkey isEqualToString: @"DATE"])
-    //  operatorPrefix = @"SENT";
-    //else
-    operatorPrefix = @"";
+    if ([dkey isEqualToString: @"SENT-DATE"])
+      operatorPrefix = @"SENT";
+    else
+      operatorPrefix = @"";
     imap4Operator = [NSString stringWithFormat: @"%@%@ ",
                               operatorPrefix, dateOperator];
   }
@@ -349,7 +346,7 @@ andComparisonSelector:(SEL)lselector {
   if (insertNot) 
     [search appendString:@"NOT "];
   
-  if ([lkey isEqualToString:@"DATE"] || [lkey isEqualToString:@"RECEIVE-DATE"]) {
+  if ([lkey isEqualToString:@"DATE"] || [lkey isEqualToString:@"RECEIVE-DATE"] || [lkey isEqualToString:@"SENT-DATE"]) {
     NSString *s;
     
     if (![lvalue isKindOfClass:[NSCalendarDate class]]) {
