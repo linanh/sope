@@ -285,6 +285,10 @@ static NSMutableDictionary *namespaces;
 }
 
 - (NSString *)delimiter {
+  if (self->delimiter == nil) {
+    [self list:@"" pattern:@""];
+  }
+  
   return self->delimiter;
 }
 
@@ -1966,6 +1970,7 @@ static inline NSArray *_flags2ImapFlags(NGImap4Client *self, NSArray *_flags) {
 
 - (NSString *)_folder2ImapFolder:(NSString *)_folder {
   NSArray *array;
+  NSString *folderName;
 
   if (self->delimiter == nil) {
     NSDictionary *res;
@@ -1993,7 +1998,13 @@ static inline NSArray *_flags2ImapFlags(NGImap4Client *self, NSArray *_flags) {
     }
   }
 
-  return [array componentsJoinedByString:self->delimiter];
+  folderName = [array componentsJoinedByString:self->delimiter];
+
+  if (self->debug) {
+      NSLog(@"IMAP folder made: %@ from %@ with separator: %@", folderName, _folder, self->delimiter);
+  }
+
+  return folderName;
 }
 
 - (NSString *)_imapFolder2Folder:(NSString *)_folder {
